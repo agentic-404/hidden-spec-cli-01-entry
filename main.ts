@@ -10,6 +10,13 @@
 //
 // The last lines hand a trial over to runner.ts when MAKEFUN_ENV_URL is set:
 // keep that hand-over and runner.ts as they are.
+//
+// r2 (correction round): the `diff --git` line is read strictly, exactly as
+// SPEC.md section 6 writes it (`diff --git a/<X> b/<Y>`); a trailing space or
+// tab after `b/<Y>` is a parse error, because the spec states every leniency
+// it allows (surrounding spaces on `--- `/`+++ ` paths, trailing text after
+// `@@`, trailing whitespace on SEARCH/REPLACE markers) and states none for
+// this line. Everything else is r1's verified implementation.
 
 import { mkdirSync, readFileSync, rmSync, statSync, writeFileSync, writeSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -317,7 +324,7 @@ function applyHunk(doc: FileDoc, hunk: Hunk, d: number, strict: boolean, path: s
 /** The unified patch's sections as edits (SPEC.md section 6). */
 function unifiedEdits(lines: string[], strict: boolean): Edit[] {
   const hunkRe = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/;
-  const diffRe = /^diff --git a\/(\S+) b\/(\S+)\s*$/;
+  const diffRe = /^diff --git a\/(\S+) b\/(\S+)$/;
   const sections: UniSection[] = [];
   const fresh = (): UniSection => ({
     diffOld: null,

@@ -63,7 +63,21 @@ input. The working directory is the root of the tree.
 Practice instance, 100 checks (unified 30, SEARCH/REPLACE 20, V4A 20, JSON 15,
 CLI 15): **100 of 100 passed, practice score 1000**, confirmed both by the
 kit's `check.ts` and by `makefun grade-local` (sealed scorer, replayed byte
-for byte). An additional 80 hand-written edge cases covering sentences the
-practice set does not show (usage errors, malformed headers, rename-only
-paths, anchor and cursor rules, end-of-file chunks, empty insertions, move
-output and atomicity) all pass.
+for byte). An additional 80 hand-written edge cases from round 1 plus 26 new
+edge cases for this correction round (sentences the practice set does not
+show) all pass.
+
+## r2 — what changed from r1
+
+One behavioral correction, from re-reading SPEC.md section 6 word by word:
+the `diff --git` line is now read strictly, exactly as the spec writes it
+(`diff --git a/<X> b/<Y>`). A trailing space or tab after `b/<Y>` is
+`error: parse <its line>`. The spec states every leniency it allows —
+surrounding spaces on `--- `/`+++ ` paths, trailing text after `@@`, trailing
+whitespace on SEARCH/REPLACE markers — and states none for this line. The
+four judgment calls from r1 (lone `--- ` after hunks read as prose, hunk-less
+sections counted as one edit, `*** End of File` with no open chunk and body
+lines after an EOF-closed chunk as parse errors, a `\` line after a `-` line
+not removing the final break) were each re-read and kept: in every case the
+spec's own wording supports r1's reading and no stronger alternative reading
+was found.
